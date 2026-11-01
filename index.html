@@ -159,6 +159,34 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .end p{font-size:18px;color:#e7efe9;max-width:30ch;line-height:1.45;margin:18px 0 0}
 .end p strong{color:var(--gold)}
 
+/* ajustes */
+.setting{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0}
+.setting + .setting{border-top:1px solid rgba(251,247,238,.1)}
+.setting b{display:block;font-size:15px}
+.setting small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.switch{width:54px;height:32px;border-radius:999px;background:rgba(251,247,238,.22);position:relative;flex:none;transition:background .2s}
+.switch i{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:var(--ivory);transition:transform .2s;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.switch[aria-checked="true"]{background:var(--gold)}
+.switch[aria-checked="true"] i{transform:translateX(22px)}
+.stepper{display:flex;align-items:center;gap:4px;background:rgba(251,247,238,.1);border-radius:999px;padding:4px;flex:none}
+.stepper button{width:34px;height:34px;border-radius:50%;background:var(--ivory);color:var(--ink);font-size:20px;font-weight:800;line-height:1}
+.stepper output{min-width:48px;text-align:center;font-weight:800;font-size:15px}
+
+/* cronómetro */
+.timer{display:flex;justify-content:center;margin-top:14px}
+.tbtn{display:inline-flex;align-items:center;gap:10px;padding:6px 18px 6px 6px;border-radius:999px;background:rgba(9,32,20,.55);color:var(--ivory);font-weight:800;font-size:16px}
+.ring{position:relative;width:46px;height:46px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:5}
+.ring .bg{stroke:rgba(251,247,238,.15)}
+.ring .fg{stroke:var(--gold);stroke-linecap:round;transition:stroke-dashoffset .1s linear,stroke .2s}
+.ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px}
+.tbtn.warn .fg{stroke:#ff6b5a}
+.tbtn.warn .ring{animation:pulse .5s ease-in-out infinite alternate}
+.tbtn.done{background:#c8102e}
+.tbtn.done .fg{stroke:var(--ivory)}
+@keyframes pulse{to{transform:scale(1.12)}}
+
 /* hoja de opciones */
 .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:5;display:none}
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:6;max-width:520px;margin:0 auto;background:var(--felt-deep);
@@ -185,7 +213,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
         <span class="r" style="transform:rotate(24deg)">K</span>
       </div>
       <h1>Cuarto Rey</h1>
-      <p>Cada carta trae un juego sorpresa. Que no te toque el cuarto rey.</p>
+      <p>Cada carta trae un juego sorpresa. Saca, lee y a jugar.</p>
     </div>
 
     <div class="panel">
@@ -196,6 +224,22 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
         <input id="name" maxlength="18" placeholder="Nombre" autocomplete="off" enterkeyhint="done">
         <button class="btn-round" type="submit" aria-label="Agregar jugador">+</button>
       </form>
+    </div>
+
+    <div class="panel">
+      <h2>Ajustes</h2>
+      <div class="setting">
+        <span><b>Jugar con el Cuarto Rey</b><small>Cada rey suma un cuarto al vaso del centro y quien saca el cuarto se lo toma al seco</small></span>
+        <button class="switch" id="sw-kings" role="switch" aria-checked="false" aria-label="Jugar con el Cuarto Rey"><i></i></button>
+      </div>
+      <div class="setting">
+        <span><b>Cronómetro</b><small>Para Rima, Historia y Cultura Chupística</small></span>
+        <div class="stepper">
+          <button id="t-minus" aria-label="Menos tiempo">−</button>
+          <output id="t-val">10 s</output>
+          <button id="t-plus" aria-label="Más tiempo">+</button>
+        </div>
+      </div>
     </div>
 
     <div class="cta">
@@ -209,8 +253,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
     <div class="hud">
       <div class="turn">Turno de<b id="who">-</b></div>
       <div class="glass">
-        <span><b id="kings">0</b> de 4 reyes<br><span id="left">52</span> cartas</span>
-        <svg viewBox="0 0 42 56" aria-hidden="true">
+        <span><span id="kings-row"><b id="kings">0</b> de 4 reyes<br></span><span id="left">52</span> cartas</span>
+        <svg id="cup-svg" viewBox="0 0 42 56" aria-hidden="true">
           <defs><clipPath id="cup"><path d="M5 4 H37 L33 52 H9 Z"/></clipPath></defs>
           <rect id="fill" x="0" y="56" width="42" height="0" fill="#e2b33c" clip-path="url(#cup)"/>
           <path d="M5 4 H37 L33 52 H9 Z" fill="none" stroke="#fbf7ee" stroke-width="2.5" stroke-linejoin="round"/>
@@ -241,10 +285,10 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
   <!-- FINAL -->
   <section class="screen" id="s-end">
     <div class="end">
-      <svg viewBox="0 0 42 56" aria-hidden="true">
+      <svg id="end-cup" viewBox="0 0 42 56" aria-hidden="true">
         <path d="M5 4 H37 L33 52 H9 Z" fill="#e2b33c" stroke="#fbf7ee" stroke-width="2.5" stroke-linejoin="round"/>
       </svg>
-      <h1>¡Al seco!</h1>
+      <h1 id="end-title">¡Al seco!</h1>
       <p id="end-text"></p>
     </div>
     <div class="cta">
@@ -276,15 +320,15 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
     izquierda:{t:"Toma el de la izquierda", d:"<strong>{izq}</strong> toma un sorbo."},
     hombres:  {t:"Toman los hombres", d:"Todos los hombres de la mesa toman un sorbo."},
     mujeres:  {t:"Toman las mujeres", d:"Todas las mujeres de la mesa toman un sorbo."},
-    cultura:  {t:"Cultura Chupística",d:"<strong>{p}</strong> elige un tema y cada uno dice algo de esa categoría. Pierde quien repite o se demora.", ex:["Marcas de cerveza","Jugadores de la Roja","Comunas de Santiago","Teleseries chilenas","Marcas de autos","Frutas","Cantantes de reggaetón","Países de Europa","Personajes de Los Simpson","Equipos de fútbol chilenos","Tragos con pisco","Películas de Disney"]},
-    historia: {t:"Historia",          d:"<strong>{p}</strong> dice una palabra. Cada jugador repite la historia completa y agrega una palabra. Quien se equivoca, toma.", ex:["Había","Ayer","Mi","Una vez","El perro","Anoche","En la playa","Mi suegra"]},
-    rima:     {t:"Rima",              d:"<strong>{p}</strong> dice una palabra y cada uno dice otra que rime. Quien no encuentra rima o repite, toma.", ex:["Canción","Pisco","Carrete","Amor","Gato","Botella","Verano","Corazón","Limón","Cerveza"]},
+    cultura:  {t:"Cultura Chupística",d:"<strong>{p}</strong> elige un tema y cada uno dice algo de esa categoría. Pierde quien repite o se demora.", ex:["Nombres que se le dan al aparato reproductor masculino, como “pene”"], timer:true},
+    historia: {t:"Historia",          d:"<strong>{p}</strong> dice una palabra. Cada jugador repite la historia completa y agrega una palabra. Quien se equivoca, toma.", ex:["Había","Ayer","Mi","Una vez","El perro","Anoche","En la playa","Mi suegra"], timer:true},
+    rima:     {t:"Rima",              d:"<strong>{p}</strong> dice una palabra y cada uno dice otra que rime. Quien no encuentra rima o repite, toma.", ex:["Canción","Pisco","Carrete","Amor","Gato","Botella","Verano","Corazón","Limón","Cerveza"], timer:true},
     cascada:  {t:"Cascada",           d:"<strong>{p}</strong> empieza a tomar y todos lo siguen en orden. Nadie para hasta que pare el de al lado."},
-    chancho:  {t:"Chancho Inflado",   d:"<strong>{p}</strong> guarda esta carta. Cuando quiera, infla las mejillas y el último en imitarlo toma.", power:"Chancho Inflado"},
+    cachetes: {t:"Cachetes Inflados", d:"<strong>{p}</strong> guarda esta carta. Cuando quiera, infla los cachetes y el último en imitarlo toma.", power:"Cachetes Inflados"},
     mano:     {t:"Mano en la cabeza", d:"<strong>{p}</strong> guarda esta carta. Cuando quiera, se pone la mano en la cabeza y el último en hacerlo toma.", power:"Mano en la cabeza"},
     dedo:     {t:"Poder del Dedo",    d:"<strong>{p}</strong> guarda esta carta. Cuando quiera, pone el dedo en la mesa y el último en hacerlo toma.", power:"Poder del Dedo"},
-    condicion:{t:"Condición",         d:"<strong>{p}</strong> inventa una regla que dura toda la partida. Quien la rompa, toma.", input:true, ex:["Prohibido decir nombres","Tomar con la mano izquierda","Prohibido decir “tomar”","Decir “salud” antes de tomar","Prohibido apuntar con el dedo","Hablar en tercera persona"]},
-    nunca:    {t:"Nunca Nunca",       d:"<strong>{p}</strong> dice algo que nunca ha hecho. Toman todos los que sí lo han hecho.", ex:["Nunca nunca me he quedado dormido en una junta","Nunca nunca he stalkeado a un ex","Nunca nunca he mentido para no ir a trabajar","Nunca nunca me he subido a un avión","Nunca nunca he cantado en un karaoke","Nunca nunca he enviado un mensaje al chat equivocado"]},
+    condicion:{t:"Condición",         d:"<strong>{p}</strong> inventa una regla que dura toda la partida. Quien la rompa, toma.", input:true, ex:["No decir la palabra “No”"]},
+    nunca:    {t:"Nunca Nunca",       d:"<strong>{p}</strong> dice algo que nunca ha hecho. Toman todos los que sí lo han hecho.", ex:["Yo nunca nunca he sido infiel, así que toman todos los que sí lo han sido"]},
     penitencia:{t:"Penitencia",       d:"<strong>{p}</strong> cumple un castigo que elija la mesa, o toma doble.", ex:["Bailar 30 segundos sin música","Imitar a alguien de la mesa","Mandar un audio cantando a un amigo","Hablar con acento argentino hasta su próximo turno","Contar un chiste malo"]}
   };
   const GAME_IDS = Object.keys(GAMES);
@@ -298,6 +342,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
     set(k,v){try{localStorage.setItem("cuartorey:"+k,JSON.stringify(v))}catch(e){}}
   };
   let players = store.get("players",[]);
+  let kingsMode = store.get("kings",false);
+  let timerSec = store.get("timerSec",10);
   let g = null; // partida
 
   const $ = id => document.getElementById(id);
@@ -326,6 +372,75 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
     players.push(v); $("name").value=""; $("err").textContent=""; renderPlayers();
   });
 
+  /* ---------- Ajustes ---------- */
+  function renderSettings(){
+    $("sw-kings").setAttribute("aria-checked",kingsMode);
+    $("t-val").textContent=timerSec+" s";
+    $("t-minus").disabled=timerSec<=5; $("t-plus").disabled=timerSec>=60;
+    store.set("kings",kingsMode); store.set("timerSec",timerSec);
+  }
+  $("sw-kings").addEventListener("click",()=>{kingsMode=!kingsMode;renderSettings()});
+  $("t-minus").addEventListener("click",()=>{timerSec=Math.max(5,timerSec-5);renderSettings()});
+  $("t-plus").addEventListener("click",()=>{timerSec=Math.min(60,timerSec+5);renderSettings()});
+
+  /* ---------- Sonido ---------- */
+  let actx=null;
+  function audio(){
+    try{
+      if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
+      if(actx.state==="suspended") actx.resume();
+    }catch(e){actx=null}
+    return actx;
+  }
+  function beep(freq,start,dur,vol,type){
+    const a=audio(); if(!a) return;
+    const t=a.currentTime+start, o=a.createOscillator(), gn=a.createGain();
+    o.type=type||"sine"; o.frequency.value=freq;
+    gn.gain.setValueAtTime(0.0001,t);
+    gn.gain.exponentialRampToValueAtTime(vol,t+0.01);
+    gn.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(gn).connect(a.destination); o.start(t); o.stop(t+dur+0.02);
+  }
+  const tick = ()=>beep(1046,0,0.14,0.35,"triangle");
+  function alarm(){
+    for(let i=0;i<8;i++) beep(i%2?740:988,i*0.18,0.16,0.4,"square");
+  }
+
+  /* ---------- Cronómetro ---------- */
+  let tm=null;
+  const CIRC=2*Math.PI*19;
+  function timerHTML(){
+    return `<div class="timer"><button class="tbtn" id="tbtn" type="button">
+      <span class="ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="19"/><circle class="fg" id="tfg" cx="23" cy="23" r="19" stroke-dasharray="${CIRC}" stroke-dashoffset="0"/></svg><b id="tnum">${timerSec}</b></span>
+      <span id="tlabel">Iniciar cronómetro</span></button></div>`;
+  }
+  function stopTimer(){ if(tm){clearInterval(tm.iv);tm=null} }
+  function startTimer(){
+    stopTimer(); audio();
+    const btn=$("tbtn"); if(!btn) return;
+    btn.classList.remove("warn","done");
+    const end=Date.now()+timerSec*1000;
+    tm={iv:null,last:timerSec};
+    $("tlabel").textContent="Reiniciar";
+    const step=()=>{
+      if(!$("tbtn")){stopTimer();return}
+      const ms=Math.max(0,end-Date.now());
+      const sec=Math.ceil(ms/1000);
+      $("tnum").textContent=sec;
+      $("tfg").setAttribute("stroke-dashoffset",CIRC*(1-ms/(timerSec*1000)));
+      if(sec!==tm.last){
+        tm.last=sec;
+        if(sec<=3&&sec>0){btn.classList.add("warn");tick()}
+      }
+      if(ms<=0){
+        stopTimer(); alarm();
+        btn.classList.remove("warn"); btn.classList.add("done");
+        $("tnum").textContent="0"; $("tlabel").textContent="¡Tiempo! Otra vez";
+      }
+    };
+    tm.iv=setInterval(step,100); step();
+  }
+
   /* ---------- Partida ---------- */
   function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
   function newGame(){
@@ -345,6 +460,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
   function renderHud(){
     $("who").textContent = players[g.turn];
     $("kings").textContent = g.kings;
+    $("kings-row").style.display = kingsMode ? "" : "none";
+    $("cup-svg").style.display = kingsMode ? "" : "none";
     $("left").textContent = g.deck.length;
     const h = 48*g.kings/4;
     $("fill").setAttribute("y",52-h); $("fill").setAttribute("height",h+4);
@@ -380,7 +497,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
     const p=players[g.turn], n=players.length;
     const izq=players[(g.turn+1)%n], der=players[(g.turn-1+n)%n];
     let title, text, extra="";
-    if(c.r==="K"){
+    stopTimer();
+    if(kingsMode && c.r==="K"){
       g.kings++;
       if(g.kings<4){
         title=`Rey ${g.kings} de 4`;
@@ -396,12 +514,15 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
       text=game.d.replace(/\{p\}/g,esc(p)).replace(/\{der\}/g,esc(der)).replace(/\{izq\}/g,esc(izq));
       if(game.ex) text+=`<span class="ex">Por ejemplo: ${esc(game.ex[Math.floor(Math.random()*game.ex.length)])}</span>`;
       if(game.power){g.powers[game.power]=p; renderActive()}
+      if(game.timer) extra=timerHTML();
       if(game.input) extra=`<form class="extra" id="rule-form"><input id="rule-in" maxlength="60" placeholder="Escribe la regla" autocomplete="off" enterkeyhint="done"><button type="submit">Guardar</button></form>`;
     }
     setTimeout(()=>{
       const res=$("result");
       res.classList.remove("pop"); void res.offsetWidth; res.classList.add("pop");
       res.innerHTML=`<h1>${title}</h1><p>${text}</p>${extra}`;
+      const tb=$("tbtn");
+      if(tb) tb.addEventListener("click",startTimer);
       const f=$("rule-form");
       if(f) f.addEventListener("submit",e=>{
         e.preventDefault(); const v=$("rule-in").value.trim(); if(!v) return;
@@ -417,6 +538,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 
   function next(){
     if(!g||g.state!=="shown") return;
+    stopTimer();
     if(g.kings===4||!g.deck.length){finish();return}
     g.turn=(g.turn+1)%players.length; g.state="ready";
     $("card").classList.remove("flip");
@@ -426,10 +548,14 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
   }
 
   function finish(){
-    const p=players[g.turn];
-    $("end-text").innerHTML = g.kings===4
+    stopTimer();
+    const p=players[g.turn], won=kingsMode&&g.kings===4;
+    $("end-title").textContent = won ? "¡Al seco!" : "¡Se acabó el mazo!";
+    $("end-cup").style.display = won ? "" : "none";
+    $("end-text").innerHTML = won
       ? `<strong>${esc(p)}</strong> sacó el cuarto rey. El vaso del centro es todo suyo.`
-      : `Se acabaron las cartas sin cuarto rey. Esta vez nadie se tomó el vaso del centro.`;
+      : kingsMode ? `Se acabaron las cartas sin cuarto rey. Esta vez nadie se tomó el vaso del centro.`
+      : `Buena partida. ¿Otra ronda?`;
     show("s-end");
   }
 
@@ -451,9 +577,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
     $("result").innerHTML=`<p class="tap">Toca el mazo, ${esc(players[g.turn])}.</p>`;
     renderHud();
   });
-  $("opt-quit").addEventListener("click",()=>{sheet(false);show("s-home")});
+  $("opt-quit").addEventListener("click",()=>{sheet(false);stopTimer();show("s-home")});
 
-  renderPlayers();
+  renderPlayers(); renderSettings();
 })();
 </script>
 </body>
